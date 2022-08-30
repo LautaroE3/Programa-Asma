@@ -16,9 +16,10 @@ const bcrypt = require("bcrypt");
 const { stringify } = require("querystring");
 
 //variables globales para el logeo y los sweetsalert
+global.idPosts= 1;
 global.isLogin = 0;
 global.login = false;
-global.idPosts= 1;
+
 
 
 //vistas
@@ -46,22 +47,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
-const port = 3700;
+const port = 3000;
 //Corremos el servidor en el puerto seleccionado
 app.listen(port, () => {
     console.log(`Servidor corriendo en el puerto ${port} correctamente`);
 });
 //Conexión al cloud de Mongodb Atlas ...
-mongoose
-    .connect(
-        "mongodb+srv://hrgarcia:EaFhXeNfxbG277Zz@cluster0.fs8tm.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
-        {
-            useNewUrlParser: true,
-        }
-    )
-    .then((con) => {
-        console.log("Conectado a la DB");
-    });
+mongoose.connect("mongodb+srv://hrgarcia:EaFhXeNfxbG277Zz@cluster0.fs8tm.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",{useNewUrlParser: true,}).then((con) => {console.log("Conectado a la DB");});
 //controlador principal
 app.get("/", (req, res) => {
     res.status(200).render("index", { login: login, isLogin: isLogin });
@@ -73,12 +65,13 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
+
         Admin.find({ usuario: req.body.usuario }, (err, docs) => {
             if(req.body.usuario==docs[0].usuario){
-
-            bcrypt.compare(req.body.contraseña,bcrypt.hashSync(docs[0].contraseña, 5),(err, resul) => {
+                bcrypt.compare(req.body.contraseña,bcrypt.hashSync(docs[0].contraseña, 5),(err, resul) => {
 
                     console.log(docs[0].contraseña);
+                    console.log("EL USUARIO SE LOGUEO")
 
                     if (err) throw err;
 
